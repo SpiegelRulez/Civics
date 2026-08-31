@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Civics Test Practice — 100 Questions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17131F;
+  --panel:#221B2E;
+  --panel2:#2E2540;
+  --edge:#3D3252;
+  --turq:#3FC7B4;
+  --turq-dim:#1F6F66;
+  --copper:#DE9146;
+  --coral:#E8604C;
+  --bone:#F2EDE4;
+  --muted:#9A90AA;
+  --display:"Archivo Black","Arial Black",Impact,sans-serif;
+  --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--ink);color:var(--bone);font-family:var(--body);
+  display:flex;min-height:100vh;padding:16px;
+  -webkit-font-smoothing:antialiased;
+}
+#app{width:100%;max-width:760px;margin:auto}
+
+/* ---------- shared ---------- */
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:28px}
+h1{font-family:var(--display);font-size:clamp(30px,6vw,46px);line-height:1.02;letter-spacing:-.01em}
+h2{font-family:var(--display);font-size:clamp(22px,4vw,30px);line-height:1.1}
+.sub{color:var(--muted);font-size:15px;line-height:1.55;margin-top:12px;max-width:56ch}
+button{font-family:var(--body);cursor:pointer;border:none;background:none;color:inherit}
+button:focus-visible,.opt:focus-visible{outline:3px solid var(--turq);outline-offset:3px}
+
+/* ---------- home ---------- */
+.rule{height:5px;background:var(--copper);width:64px;border-radius:3px;margin:22px 0}
+.modes{display:grid;gap:10px;margin-top:26px}
+.mode{
+  display:flex;align-items:center;gap:16px;width:100%;text-align:left;
+  background:var(--panel2);border:1px solid var(--edge);border-radius:11px;padding:15px 18px;
+  transition:border-color .12s,background .12s;
+}
+.mode:hover{border-color:var(--turq);background:#352B49}
+.mode-n{font-family:var(--display);font-size:19px;color:var(--copper);min-width:34px}
+.mode-t{font-weight:600;font-size:16px;display:block}
+.mode-d{color:var(--muted);font-size:13.5px;margin-top:3px;display:block}
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.cat{
+  background:var(--panel2);border:1px solid var(--edge);border-radius:999px;
+  padding:9px 15px;font-size:13.5px;font-weight:500;transition:border-color .12s;
+}
+.cat:hover{border-color:var(--turq)}
+.foot{color:var(--muted);font-size:12.5px;margin-top:26px;line-height:1.6}
+
+/* ---------- status bar ---------- */
+.bar{display:flex;align-items:center;gap:18px;margin-bottom:14px;flex-wrap:wrap}
+.stat{display:flex;align-items:baseline;gap:7px}
+.stat b{font-family:var(--display);font-size:21px}
+.stat span{color:var(--muted);font-size:12px;font-weight:600}
+.streak b{color:var(--copper)}
+.track{flex:1;min-width:110px;height:6px;background:var(--panel2);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--turq);width:0;transition:width .25s ease}
+.quit{color:var(--muted);font-size:13px;font-weight:500;padding:4px 6px}
+.quit:hover{color:var(--bone)}
+
+/* ---------- question ---------- */
+.tag{
+  display:inline-block;background:var(--panel2);border:1px solid var(--edge);
+  color:var(--muted);font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px;
+}
+.qtext{font-size:clamp(19px,3.4vw,25px);font-weight:700;line-height:1.32;margin:16px 0 22px}
+.opts{display:grid;gap:9px}
+.opt{
+  display:flex;align-items:flex-start;gap:13px;width:100%;text-align:left;
+  background:var(--panel2);border:1.5px solid var(--edge);border-radius:11px;
+  padding:15px 17px;font-size:15.5px;line-height:1.4;color:var(--bone);
+  transition:border-color .12s,background .12s;
+}
+.opt:hover:not(:disabled){border-color:var(--muted)}
+.opt:disabled{cursor:default}
+.key{
+  font-family:var(--display);font-size:12px;color:var(--muted);
+  min-width:20px;padding-top:2px;
+}
+.opt.right{border-color:var(--turq);background:rgba(63,199,180,.13)}
+.opt.right .key{color:var(--turq)}
+.opt.wrong{border-color:var(--coral);background:rgba(232,96,76,.12)}
+.opt.wrong .key{color:var(--coral)}
+
+.fb{margin-top:18px;padding:15px 17px;border-radius:11px;font-size:15px;line-height:1.5;display:none}
+.fb.on{display:block}
+.fb.ok{background:rgba(63,199,180,.11);border-left:4px solid var(--turq)}
+.fb.no{background:rgba(232,96,76,.11);border-left:4px solid var(--coral)}
+.fb strong{font-weight:700}
+.fb .alt{color:var(--muted);font-size:13.5px;margin-top:7px;display:block}
+
+.next{
+  margin-top:16px;background:var(--turq);color:#0F2C28;font-weight:700;font-size:15.5px;
+  padding:13px 26px;border-radius:10px;display:none;
+}
+.next.on{display:inline-block}
+.next:hover{background:#57D6C4}
+
+/* ---------- results ---------- */
+.big{font-family:var(--display);font-size:clamp(48px,11vw,76px);line-height:1;color:var(--turq)}
+.big.fail{color:var(--copper)}
+.verdict{font-size:16px;color:var(--muted);margin-top:10px;line-height:1.55;max-width:52ch}
+.missed{margin-top:24px;border-top:1px solid var(--edge);padding-top:20px}
+.missed h3{font-size:14px;font-weight:700;margin-bottom:12px}
+.miss{background:var(--panel2);border-radius:9px;padding:13px 15px;margin-bottom:8px;font-size:14px;line-height:1.45}
+.miss em{color:var(--muted);font-style:normal;display:block;margin-top:5px;font-size:13px}
+.miss em b{color:var(--turq);font-weight:600}
+.acts{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.act{background:var(--turq);color:#0F2C28;font-weight:700;font-size:15px;padding:12px 22px;border-radius:10px}
+.act:hover{background:#57D6C4}
+.act.ghost{background:none;border:1.5px solid var(--edge);color:var(--bone)}
+.act.ghost:hover{border-color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:520px){.card{padding:20px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============ DATA: the 100 USCIS civics questions ============
+   c = category, q = question, o = options, a = index of correct answer,
+   alt = other answers the real test also accepts                        */
+const CATS = {
+  gov:"American Government",
+  hist:"American History",
+  civ:"Integrated Civics"
+};
+
+const Q = [
+// ---- Principles of American Democracy ----
+{c:"gov",q:"What is the supreme law of the land?",o:["The Constitution","The Declaration of Independence","The Bill of Rights","The Articles of Confederation"],a:0},
+{c:"gov",q:"What does the Constitution do?",o:["Declares independence from Britain","Sets up the government and protects basic rights","Creates the political parties","Lists the 50 states"],a:1,alt:"Also accepted: defines the government."},
+{c:"gov",q:"The idea of self-government is in the first three words of the Constitution. What are these words?",o:["In Order to","We the People","Life and Liberty","We the States"],a:1},
+{c:"gov",q:"What is an amendment?",o:["A law passed by a state","A decision by the Supreme Court","A change or addition to the Constitution","A veto by the President"],a:2},
+{c:"gov",q:"What do we call the first ten amendments to the Constitution?",o:["The Preamble","The Articles","The Bill of Rights","The Emancipation Proclamation"],a:2},
+{c:"gov",q:"What is one right or freedom from the First Amendment?",o:["Speech","The right to bear arms","A speedy trial","The right to vote"],a:0,alt:"Also accepted: religion, assembly, press, petition the government."},
+{c:"gov",q:"How many amendments does the Constitution have?",o:["Ten","Twenty-one","Twenty-seven","Fifty"],a:2},
+{c:"gov",q:"What did the Declaration of Independence do?",o:["Created the three branches of government","Announced our independence from Great Britain","Freed the enslaved people","Ended the Civil War"],a:1},
+{c:"gov",q:"What are two rights in the Declaration of Independence?",o:["Speech and religion","Trial by jury and bearing arms","Life and liberty","Voting and running for office"],a:2,alt:"Also accepted: the pursuit of happiness."},
+{c:"gov",q:"What is freedom of religion?",o:["The government picks one official religion","You can practice any religion, or not practice a religion","Only Christians may hold office","Churches pay no taxes"],a:1},
+{c:"gov",q:"What is the economic system in the United States?",o:["Socialist economy","Command economy","Capitalist economy","Barter economy"],a:2,alt:"Also accepted: market economy."},
+{c:"gov",q:"What is the \u201Crule of law\u201D?",o:["Everyone must follow the law","The President makes the laws","Only Congress must follow the law","Judges may ignore laws they dislike"],a:0,alt:"Also accepted: leaders must obey the law; government must obey the law; no one is above the law."},
+// ---- System of Government ----
+{c:"gov",q:"Name one branch or part of the government.",o:["The military","Congress","The states","Political parties"],a:1,alt:"Also accepted: the President (executive), the courts (judicial)."},
+{c:"gov",q:"What stops one branch of government from becoming too powerful?",o:["The census","Checks and balances","Term limits","The Cabinet"],a:1,alt:"Also accepted: separation of powers."},
+{c:"gov",q:"Who is in charge of the executive branch?",o:["The Chief Justice","The Speaker of the House","The President","The Vice President"],a:2},
+{c:"gov",q:"Who makes federal laws?",o:["Congress","The President","The Supreme Court","The states"],a:0,alt:"Also accepted: the Senate and House; the U.S. or national legislature."},
+{c:"gov",q:"What are the two parts of the U.S. Congress?",o:["The House and the Cabinet","The Senate and the Supreme Court","The Senate and the House of Representatives","The Senate and the Electoral College"],a:2},
+{c:"gov",q:"How many U.S. Senators are there?",o:["Fifty","One hundred","Four hundred thirty-five","Five hundred thirty-eight"],a:1},
+{c:"gov",q:"We elect a U.S. Senator for how many years?",o:["Two","Four","Six","Eight"],a:2},
+{c:"gov",q:"Who is one of your state\u2019s U.S. Senators now?",o:["Mark Kelly","Kyrsten Sinema","John McCain","Katie Hobbs"],a:0,alt:"Arizona\u2019s other senator is Ruben Gallego. Either name is accepted."},
+{c:"gov",q:"The House of Representatives has how many voting members?",o:["One hundred","Fifty","Five hundred thirty-eight","Four hundred thirty-five"],a:3},
+{c:"gov",q:"We elect a U.S. Representative for how many years?",o:["One","Two","Four","Six"],a:1},
+{c:"gov",q:"Who does a U.S. Senator represent?",o:["Only the people who voted for them","Only their political party","All people of the state","Only their home city"],a:2},
+{c:"gov",q:"Why do some states have more Representatives than other states?",o:["Because of the state\u2019s population","Because of the state\u2019s size in square miles","Because of how long the state has existed","Because of how much the state pays in taxes"],a:0},
+{c:"gov",q:"We elect a President for how many years?",o:["Two","Four","Six","Eight"],a:1},
+{c:"gov",q:"In what month do we vote for President?",o:["January","June","October","November"],a:3},
+{c:"gov",q:"What is the name of the President of the United States now?",o:["Joe Biden","Donald Trump","JD Vance","Barack Obama"],a:1},
+{c:"gov",q:"What is the name of the Vice President of the United States now?",o:["Kamala Harris","Mike Johnson","JD Vance","Mike Pence"],a:2},
+{c:"gov",q:"If the President can no longer serve, who becomes President?",o:["The Speaker of the House","The Secretary of State","The Vice President","The Chief Justice"],a:2},
+{c:"gov",q:"If both the President and the Vice President can no longer serve, who becomes President?",o:["The Speaker of the House","The President pro tempore","The Secretary of State","The Chief Justice"],a:0},
+{c:"gov",q:"Who is the Commander in Chief of the military?",o:["The Secretary of Defense","A five-star general","The President","The Vice President"],a:2},
+{c:"gov",q:"Who signs bills to become laws?",o:["The Speaker of the House","The President","The Chief Justice","The Vice President"],a:1},
+{c:"gov",q:"Who vetoes bills?",o:["The Senate","The Supreme Court","The Speaker of the House","The President"],a:3},
+{c:"gov",q:"What does the President\u2019s Cabinet do?",o:["Writes the laws","Advises the President","Approves Supreme Court justices","Commands the army"],a:1},
+{c:"gov",q:"What are two Cabinet-level positions?",o:["Speaker of the House and Majority Leader","Chief Justice and Associate Justice","Secretary of State and Secretary of Defense","Senator and Representative"],a:2,alt:"Any two Cabinet secretaries are accepted, plus the Attorney General and the Vice President."},
+{c:"gov",q:"What does the judicial branch do?",o:["Writes laws","Enforces laws","Reviews laws and decides if they go against the Constitution","Collects taxes"],a:2,alt:"Also accepted: explains laws; resolves disputes."},
+{c:"gov",q:"What is the highest court in the United States?",o:["The Supreme Court","The Federal Court of Appeals","The District Court","The State Supreme Court"],a:0},
+{c:"gov",q:"How many justices are on the Supreme Court?",o:["Seven","Nine","Twelve","Thirteen"],a:1},
+{c:"gov",q:"Who is the Chief Justice of the United States now?",o:["Clarence Thomas","Samuel Alito","John Roberts","Amy Coney Barrett"],a:2},
+{c:"gov",q:"Under our Constitution, some powers belong to the federal government. What is one federal power?",o:["To issue driver\u2019s licenses","To print money","To provide schooling","To run local elections"],a:1,alt:"Also accepted: to declare war, to create an army, to make treaties."},
+{c:"gov",q:"Under our Constitution, some powers belong to the states. What is one state power?",o:["Print money","Declare war","Make treaties","Provide schooling and education"],a:3,alt:"Also accepted: provide police protection, provide fire safety, give a driver\u2019s license, approve zoning and land use."},
+{c:"gov",q:"Who is the Governor of your state now?",o:["Katie Hobbs","Doug Ducey","Jan Brewer","Kyrsten Sinema"],a:0},
+{c:"gov",q:"What is the capital of your state?",o:["Tucson","Flagstaff","Phoenix","Mesa"],a:2},
+{c:"gov",q:"What are the two major political parties in the United States?",o:["Federalist and Whig","Democratic and Republican","Libertarian and Green","Democratic and Independent"],a:1},
+{c:"gov",q:"What is the political party of the President now?",o:["Democratic","Republican","Independent","Libertarian"],a:1},
+{c:"gov",q:"What is the name of the Speaker of the House of Representatives now?",o:["Kevin McCarthy","Hakeem Jeffries","Mike Johnson","Steve Scalise"],a:2},
+// ---- Rights and Responsibilities ----
+{c:"gov",q:"There are four amendments to the Constitution about who can vote. Describe one of them.",o:["Only landowners can vote","Citizens eighteen and older can vote","You must pass a test to vote","Only men can vote"],a:1,alt:"Also accepted: you don\u2019t have to pay a poll tax to vote; any citizen can vote (women and men); a male citizen of any race can vote."},
+{c:"gov",q:"What is one responsibility that is only for United States citizens?",o:["Pay taxes","Obey the law","Serve on a jury","Attend school"],a:2,alt:"Also accepted: vote in a federal election."},
+{c:"gov",q:"Name one right only for United States citizens.",o:["Freedom of speech","Vote in a federal election","Freedom of religion","The right to a fair trial"],a:1,alt:"Also accepted: run for federal office."},
+{c:"gov",q:"What are two rights of everyone living in the United States?",o:["Voting and jury duty","Running for President and serving in Congress","Freedom of speech and freedom of religion","Free college and free healthcare"],a:2,alt:"Also accepted: freedom of expression, freedom of assembly, freedom to petition the government, the right to bear arms."},
+{c:"gov",q:"What do we show loyalty to when we say the Pledge of Allegiance?",o:["The United States","The President","Congress","Our home state"],a:0,alt:"Also accepted: the flag."},
+{c:"gov",q:"What is one promise you make when you become a United States citizen?",o:["Vote in every election","Learn a second language","Give up loyalty to other countries","Live in the U.S. for ten more years"],a:2,alt:"Also accepted: defend the Constitution and laws of the U.S.; obey the laws; serve in the military if needed; serve the nation if needed; be loyal to the United States."},
+{c:"gov",q:"How old do citizens have to be to vote for President?",o:["Sixteen","Eighteen and older","Twenty-one","Twenty-five"],a:1},
+{c:"gov",q:"What are two ways that Americans can participate in their democracy?",o:["Vote and join a political party","Serve in the Cabinet and sign bills","Veto laws and appoint judges","Declare war and print money"],a:0,alt:"Also accepted: help with a campaign, join a civic group, call Senators and Representatives, publicly support or oppose an issue, run for office, write to a newspaper."},
+{c:"gov",q:"When is the last day you can send in federal income tax forms?",o:["January 1","April 15","July 4","December 31"],a:1},
+{c:"gov",q:"When must all men register for the Selective Service?",o:["At age sixteen","At age eighteen","At age twenty-one","Only during a war"],a:1,alt:"Also accepted: between eighteen and twenty-six."},
+// ---- Colonial Period and Independence ----
+{c:"hist",q:"What is one reason colonists came to America?",o:["To join the United States","Religious freedom","To end slavery","To fight the Civil War"],a:1,alt:"Also accepted: freedom, political liberty, economic opportunity, to practice their religion, to escape persecution."},
+{c:"hist",q:"Who lived in America before the Europeans arrived?",o:["The Spanish","American Indians","The Vikings","No one"],a:1,alt:"Also accepted: Native Americans."},
+{c:"hist",q:"What group of people was taken to America and sold as slaves?",o:["People from Asia","People from Ireland","Africans","People from Mexico"],a:2,alt:"Also accepted: people from Africa."},
+{c:"hist",q:"Why did the colonists fight the British?",o:["Because of high taxes without representation","Because Britain freed the enslaved people","Because Britain refused to trade","Because Britain invaded Canada"],a:0,alt:"Also accepted: because the British army stayed in their houses (boarding, quartering); because they didn\u2019t have self-government."},
+{c:"hist",q:"Who wrote the Declaration of Independence?",o:["George Washington","Benjamin Franklin","Thomas Jefferson","John Adams"],a:2},
+{c:"hist",q:"When was the Declaration of Independence adopted?",o:["July 4, 1776","September 17, 1787","July 4, 1789","December 7, 1776"],a:0},
+{c:"hist",q:"There were 13 original states. Name three.",o:["Ohio, Vermont, Maine","Florida, Texas, California","Virginia, Maryland, Georgia","Kentucky, Tennessee, Alabama"],a:2,alt:"The 13: New Hampshire, Massachusetts, Rhode Island, Connecticut, New York, New Jersey, Pennsylvania, Delaware, Maryland, Virginia, North Carolina, South Carolina, Georgia."},
+{c:"hist",q:"What happened at the Constitutional Convention?",o:["The Declaration of Independence was signed","The Constitution was written","The Bill of Rights was ratified","The colonies declared war"],a:1,alt:"Also accepted: the Founding Fathers wrote the Constitution."},
+{c:"hist",q:"When was the Constitution written?",o:["1776","1787","1791","1800"],a:1},
+{c:"hist",q:"The Federalist Papers supported the passage of the U.S. Constitution. Name one of the writers.",o:["Thomas Jefferson","George Washington","James Madison","Patrick Henry"],a:2,alt:"Also accepted: Alexander Hamilton, John Jay, Publius."},
+{c:"hist",q:"What is one thing Benjamin Franklin is famous for?",o:["First President","U.S. diplomat","Wrote the Declaration of Independence","Led the Continental Army"],a:1,alt:"Also accepted: oldest member of the Constitutional Convention; first Postmaster General; writer of \u201CPoor Richard\u2019s Almanac\u201D; started the first free libraries."},
+{c:"hist",q:"Who is the \u201CFather of Our Country\u201D?",o:["Thomas Jefferson","Benjamin Franklin","George Washington","Abraham Lincoln"],a:2},
+{c:"hist",q:"Who was the first President?",o:["George Washington","John Adams","Thomas Jefferson","Benjamin Franklin"],a:0},
+// ---- 1800s ----
+{c:"hist",q:"What territory did the United States buy from France in 1803?",o:["Florida","The Louisiana Territory","Alaska","Texas"],a:1},
+{c:"hist",q:"Name one war fought by the United States in the 1800s.",o:["World War I","The Revolutionary War","The Civil War","The Korean War"],a:2,alt:"Also accepted: the War of 1812, the Mexican-American War, the Spanish-American War."},
+{c:"hist",q:"Name the U.S. war between the North and the South.",o:["The Revolutionary War","The War of 1812","The Civil War","The Spanish-American War"],a:2,alt:"Also accepted: the War between the States."},
+{c:"hist",q:"Name one problem that led to the Civil War.",o:["Slavery","The Louisiana Purchase","The Great Depression","Immigration from Europe"],a:0,alt:"Also accepted: economic reasons; states\u2019 rights."},
+{c:"hist",q:"What was one important thing that Abraham Lincoln did?",o:["Wrote the Constitution","Freed the enslaved people","Bought Alaska","Ended World War I"],a:1,alt:"Also accepted: saved (or preserved) the Union; led the United States during the Civil War."},
+{c:"hist",q:"What did the Emancipation Proclamation do?",o:["Gave women the vote","Ended the Civil War","Freed the enslaved people in the Confederacy","Created the 13 colonies"],a:2},
+{c:"hist",q:"What did Susan B. Anthony do?",o:["Led the Union Army","Fought for women\u2019s rights","Wrote Uncle Tom\u2019s Cabin","Served as First Lady"],a:1,alt:"Also accepted: fought for civil rights."},
+// ---- Recent American History ----
+{c:"hist",q:"Name one war fought by the United States in the 1900s.",o:["The Civil War","The War of 1812","World War II","The Spanish-American War"],a:2,alt:"Also accepted: World War I, the Korean War, the Vietnam War, the (Persian) Gulf War."},
+{c:"hist",q:"Who was President during World War I?",o:["Woodrow Wilson","Franklin Roosevelt","Theodore Roosevelt","Herbert Hoover"],a:0},
+{c:"hist",q:"Who was President during the Great Depression and World War II?",o:["Harry Truman","Franklin Roosevelt","Woodrow Wilson","Dwight Eisenhower"],a:1},
+{c:"hist",q:"Who did the United States fight in World War II?",o:["China, Russia, and France","Japan, Germany, and Italy","Spain, Mexico, and Cuba","Britain, Canada, and Australia"],a:1},
+{c:"hist",q:"Before he was President, Eisenhower was a general. What war was he in?",o:["World War I","World War II","The Korean War","The Vietnam War"],a:1},
+{c:"hist",q:"During the Cold War, what was the main concern of the United States?",o:["Communism","Terrorism","The slave trade","Immigration"],a:0},
+{c:"hist",q:"What movement tried to end racial discrimination?",o:["The temperance movement","The labor movement","The civil rights movement","The Progressive movement"],a:2},
+{c:"hist",q:"What did Martin Luther King, Jr. do?",o:["Fought for civil rights","Served as the first Black President","Led the Union Army","Wrote the Fourteenth Amendment"],a:0,alt:"Also accepted: worked for equality for all Americans."},
+{c:"hist",q:"What major event happened on September 11, 2001, in the United States?",o:["The Cold War ended","Terrorists attacked the United States","The Vietnam War began","The stock market crashed"],a:1},
+{c:"hist",q:"Name one American Indian tribe in the United States.",o:["Aztec","Maya","Navajo","Inca"],a:2,alt:"Also accepted: Cherokee, Sioux, Chippewa, Choctaw, Pueblo, Apache, Iroquois, Creek, Blackfeet, Seminole, Cheyenne, Arawak, Shawnee, Mohegan, Huron, Oneida, Lakota, Crow, Teton, Hopi, Inuit."},
+// ---- Geography ----
+{c:"civ",q:"Name one of the two longest rivers in the United States.",o:["The Colorado River","The Rio Grande","The Mississippi River","The Ohio River"],a:2,alt:"Also accepted: the Missouri River."},
+{c:"civ",q:"What ocean is on the West Coast of the United States?",o:["The Pacific Ocean","The Atlantic Ocean","The Arctic Ocean","The Indian Ocean"],a:0},
+{c:"civ",q:"What ocean is on the East Coast of the United States?",o:["The Pacific Ocean","The Atlantic Ocean","The Arctic Ocean","The Gulf of Mexico"],a:1},
+{c:"civ",q:"Name one U.S. territory.",o:["Cuba","Hawaii","Puerto Rico","Bermuda"],a:2,alt:"Also accepted: U.S. Virgin Islands, American Samoa, Northern Mariana Islands, Guam."},
+{c:"civ",q:"Name one state that borders Canada.",o:["Arizona","Michigan","Texas","Oregon"],a:1,alt:"Also accepted: Maine, New Hampshire, Vermont, New York, Pennsylvania, Ohio, Minnesota, North Dakota, Montana, Idaho, Washington, Alaska."},
+{c:"civ",q:"Name one state that borders Mexico.",o:["Nevada","Louisiana","Arizona","Colorado"],a:2,alt:"Also accepted: California, New Mexico, Texas."},
+{c:"civ",q:"What is the capital of the United States?",o:["New York City","Washington, D.C.","Philadelphia","Boston"],a:1},
+{c:"civ",q:"Where is the Statue of Liberty?",o:["Washington, D.C.","Boston Harbor","New York Harbor","Philadelphia"],a:2,alt:"Also accepted: Liberty Island; New Jersey; near New York City; on the Hudson River."},
+// ---- Symbols ----
+{c:"civ",q:"Why does the flag have 13 stripes?",o:["Because there were 13 original colonies","For the first 13 amendments","For the first 13 Presidents","For the 13 founders"],a:0,alt:"Also accepted: because the stripes represent the original colonies."},
+{c:"civ",q:"Why does the flag have 50 stars?",o:["For 50 years of independence","For the 50 signers","Because there is one star for each state","For 50 original colonies"],a:2,alt:"Also accepted: because there are 50 states."},
+{c:"civ",q:"What is the name of the national anthem?",o:["America the Beautiful","The Star-Spangled Banner","God Bless America","My Country, \u2019Tis of Thee"],a:1},
+// ---- Holidays ----
+{c:"civ",q:"When do we celebrate Independence Day?",o:["July 4","July 14","June 4","September 17"],a:0},
+{c:"civ",q:"Name two national U.S. holidays.",o:["Halloween and Valentine\u2019s Day","Thanksgiving and Memorial Day","Easter and Groundhog Day","Cinco de Mayo and St. Patrick\u2019s Day"],a:1,alt:"Also accepted: New Year\u2019s Day, Martin Luther King, Jr. Day, Presidents\u2019 Day, Juneteenth, Independence Day, Labor Day, Columbus Day, Veterans Day, Christmas."}
+];
+
+const REP_NOTE = "Question 23 on the official list asks you to name your own U.S. Representative. That depends on which district you live in, so it isn\u2019t in this deck. Look yours up at house.gov and memorize it before test day.";
+
+/* ============ STATE ============ */
+let deck=[], idx=0, score=0, streak=0, best=0, mode="", missed=[], answered=false;
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+/* shuffle each question's options while tracking the answer */
+function prep(q){
+  const order=shuffle(q.o.map((t,i)=>({t,i})));
+  return {...q, _o:order.map(x=>x.t), _a:order.findIndex(x=>x.i===q.a)};
+}
+
+/* ============ SCREENS ============ */
+function home(){
+  app.innerHTML=`<div class="card">
+    <h1>100 questions.<br>You need 70.</h1>
+    <div class="rule"></div>
+    <p class="sub">Every question on the Arizona civics test comes from this list. Pick a way to drill them.</p>
+    <div class="modes">
+      <button class="mode" data-m="quick"><span class="mode-n">10</span><span><span class="mode-t">Quick round</span><span class="mode-d">Ten random questions. Good for five spare minutes.</span></span></button>
+      <button class="mode" data-m="exam"><span class="mode-n">20</span><span><span class="mode-t">Practice test</span><span class="mode-d">Twenty questions, scored like the real thing. You need 14 to pass.</span></span></button>
+      <button class="mode" data-m="streak"><span class="mode-n">&#8734;</span><span><span class="mode-t">Streak</span><span class="mode-d">Keep going until you miss one. How far can you get?</span></span></button>
+      <button class="mode" data-m="all"><span class="mode-n">99</span><span><span class="mode-t">Every question</span><span class="mode-d">The whole deck, shuffled. The long haul.</span></span></button>
+    </div>
+    <p class="sub" style="margin-top:24px">Or drill one section:</p>
+    <div class="cats">
+      <button class="cat" data-c="gov">American Government &middot; 56</button>
+      <button class="cat" data-c="hist">American History &middot; 30</button>
+      <button class="cat" data-c="civ">Integrated Civics &middot; 13</button>
+    </div>
+    <p class="foot">${esc(REP_NOTE)}<br><br>Officeholder answers current as of August 2026. Your score resets if you close the page.</p>
+  </div>`;
+  app.querySelectorAll(".mode").forEach(b=>b.onclick=()=>start(b.dataset.m));
+  app.querySelectorAll(".cat").forEach(b=>b.onclick=()=>start("cat",b.dataset.c));
+}
+
+function start(m,cat){
+  mode=m; idx=0; score=0; streak=0; missed=[]; answered=false;
+  let pool=Q;
+  if(m==="cat") pool=Q.filter(q=>q.c===cat);
+  pool=shuffle(pool).map(prep);
+  if(m==="quick") pool=pool.slice(0,10);
+  if(m==="exam")  pool=pool.slice(0,20);
+  deck=pool;
+  render();
+}
+
+function render(){
+  if(idx>=deck.length) return results();
+  answered=false;
+  const q=deck[idx];
+  const total=mode==="streak"?"\u221E":deck.length;
+  const pct=mode==="streak"?Math.min(streak*4,100):(idx/deck.length)*100;
+  app.innerHTML=`
+    <div class="bar">
+      <span class="stat"><b>${score}</b><span>CORRECT</span></span>
+      <span class="stat streak"><b>${streak}</b><span>STREAK</span></span>
+      <span class="stat"><b>${idx+1}</b><span>OF ${total}</span></span>
+      <span class="track"><span class="fill" style="width:${pct}%"></span></span>
+      <button class="quit">Back</button>
+    </div>
+    <div class="card">
+      <span class="tag">${esc(CATS[q.c])}</span>
+      <p class="qtext">${esc(q.q)}</p>
+      <div class="opts">
+        ${q._o.map((t,i)=>`<button class="opt" data-i="${i}"><span class="key">${"ABCD"[i]}</span><span>${esc(t)}</span></button>`).join("")}
+      </div>
+      <div class="fb" id="fb"></div>
+      <button class="next" id="next">Next question</button>
+    </div>`;
+  app.querySelector(".quit").onclick=home;
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(+b.dataset.i));
+  app.querySelector("#next").onclick=()=>{idx++;render();};
+}
+
+function pick(i){
+  if(answered) return;
+  answered=true;
+  const q=deck[idx], right=i===q._a;
+  const opts=app.querySelectorAll(".opt");
+  opts.forEach((b,n)=>{
+    b.disabled=true;
+    if(n===q._a) b.classList.add("right");
+    else if(n===i) b.classList.add("wrong");
+  });
+  const fb=app.querySelector("#fb");
+  if(right){
+    score++; streak++; best=Math.max(best,streak);
+    fb.className="fb on ok";
+    fb.innerHTML=`<strong>Correct.</strong>${q.alt?`<span class="alt">${esc(q.alt)}</span>`:""}`;
+  }else{
+    streak=0;
+    missed.push(q);
+    fb.className="fb on no";
+    fb.innerHTML=`<strong>The answer is ${esc(q._o[q._a])}.</strong>${q.alt?`<span class="alt">${esc(q.alt)}</span>`:""}`;
+    if(mode==="streak"){ setTimeout(()=>results(),1400); return; }
+  }
+  const nx=app.querySelector("#next");
+  nx.classList.add("on");
+  nx.textContent = idx+1>=deck.length ? "See results" : "Next question";
+  nx.focus();
+  answered=true;
+}
+
+function results(){
+  const asked = mode==="streak" ? score+1 : deck.length;
+  const pct = asked? Math.round(score/Math.max(asked,1)*100) : 0;
+  let head, verdict, fail=false;
+
+  if(mode==="streak"){
+    head=score; verdict=score>=15?"Serious run. That is well past what you need on test day."
+      :score>=8?"Solid. Keep stacking them."
+      :"Short run. Try a category drill, then come back.";
+    if(score<8) fail=true;
+  }else if(mode==="exam"){
+    head=pct+"%";
+    fail=pct<70;
+    verdict=fail?"Below the seventy percent Arizona requires. Look at what you missed, then run it again."
+      :pct>=90?"Comfortably passing. Run it again to keep it sharp."
+      :pct>=80?"That passes. Tighten up the ones below and it will not be close."
+      :"That passes, but barely. A couple of different questions and it flips. Drill the ones below.";
+  }else{
+    head=pct+"%";
+    fail=pct<70;
+    verdict=`${score} of ${asked} correct.` + (fail?" Under the passing line. The missed ones are below."
+      :" Above the passing line.");
+  }
+
+  app.innerHTML=`<div class="card">
+    <p class="big${fail?" fail":""}">${esc(head)}</p>
+    <p class="verdict">${esc(verdict)}</p>
+    ${missed.length?`<div class="missed"><h3>Worth another look</h3>
+      ${missed.map(q=>`<div class="miss">${esc(q.q)}<em><b>${esc(q._o[q._a])}</b>${q.alt?" \u2014 "+esc(q.alt):""}</em></div>`).join("")}
+    </div>`:""}
+    <div class="acts">
+      ${missed.length?`<button class="act" id="redo">Drill the ${missed.length} you missed</button>`:""}
+      <button class="act${missed.length?" ghost":""}" id="again">Play again</button>
+      <button class="act ghost" id="menu">Back to menu</button>
+    </div>
+  </div>`;
+  const r=app.querySelector("#redo");
+  if(r) r.onclick=()=>{deck=shuffle(missed).map(q=>prep(q));idx=0;score=0;streak=0;missed=[];answered=false;mode="quick";render();};
+  app.querySelector("#again").onclick=()=>start(mode==="streak"?"streak":mode);
+  app.querySelector("#menu").onclick=home;
+}
+
+/* keyboard: A-D or 1-4 to answer, Enter to advance */
+document.addEventListener("keydown",e=>{
+  const opts=app.querySelectorAll(".opt");
+  if(!opts.length) return;
+  const k=e.key.toLowerCase();
+  const n="abcd".indexOf(k)>=0?"abcd".indexOf(k):("1234".indexOf(k)>=0?"1234".indexOf(k):-1);
+  if(n>=0&&n<opts.length&&!opts[0].disabled){e.preventDefault();pick(n);}
+  if(e.key==="Enter"){const nx=app.querySelector("#next.on");if(nx){e.preventDefault();nx.click();}}
+});
+
+home();
+</script>
+</body>
+</html>
