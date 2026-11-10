@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Madison's Problem — Federalist 10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#241B17;--panel:#31241E;--panel2:#3E2E26;--edge:#554034;
+  --terra:#D4694F;--sand:#E7E8D1;--sage:#A7BEAE;--gold:#E0A857;
+  --bone:#F4EFE7;--muted:#A79386;
+  --display:"Archivo Black","Arial Black",Impact,sans-serif;
+  --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--bone);font-family:var(--body);
+  display:flex;min-height:100vh;padding:18px;-webkit-font-smoothing:antialiased}
+#app{width:100%;max-width:820px;margin:auto}
+h1{font-family:var(--display);font-size:clamp(28px,5.5vw,44px);line-height:1.04}
+button{font-family:var(--body);cursor:pointer;border:none;background:none;color:inherit}
+button:focus-visible{outline:3px solid var(--sage);outline-offset:3px}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:28px}
+.sub{color:var(--muted);font-size:15.5px;line-height:1.6;margin-top:14px;max-width:62ch}
+.rule{height:5px;width:62px;background:var(--terra);border-radius:3px;margin:20px 0}
+.btn{background:var(--sage);color:#1C2A22;font-weight:700;font-size:15.5px;padding:13px 26px;border-radius:10px;margin-top:22px}
+.btn:hover{background:#BDD2C5}
+
+.bar{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.step{font-family:var(--display);font-size:13px;color:var(--gold)}
+.track{flex:1;min-width:100px;height:6px;background:var(--panel2);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--sage);transition:width .3s}
+.quit{color:var(--muted);font-size:13px;padding:4px 6px}
+.quit:hover{color:var(--bone)}
+
+.tag{display:inline-block;background:var(--panel2);border:1px solid var(--edge);color:var(--muted);
+  font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px;letter-spacing:.04em}
+.q{font-size:clamp(19px,3.3vw,25px);font-weight:700;line-height:1.34;margin:16px 0 10px}
+.setup{color:var(--sand);font-size:15.5px;line-height:1.6;margin-bottom:20px}
+
+.opts{display:grid;gap:9px}
+.opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+  background:var(--panel2);border:1.5px solid var(--edge);border-radius:11px;
+  padding:14px 16px;font-size:15.5px;line-height:1.42;color:var(--bone);transition:border-color .12s}
+.opt:hover:not(:disabled){border-color:var(--muted)}
+.opt:disabled{cursor:default;opacity:.75}
+.opt.pick{border-color:var(--gold);background:rgba(224,168,87,.12);opacity:1}
+.key{font-family:var(--display);font-size:11.5px;color:var(--muted);min-width:18px;padding-top:3px}
+.opt.pick .key{color:var(--gold)}
+
+.madison{margin-top:20px;background:rgba(167,190,174,.10);border-left:4px solid var(--sage);
+  border-radius:11px;padding:18px 20px;display:none}
+.madison.on{display:block}
+.madison h4{font-size:12px;letter-spacing:.06em;color:var(--sage);margin-bottom:10px;font-weight:700}
+.quote{font-size:16px;line-height:1.55;font-style:italic;color:var(--bone)}
+.gloss{color:var(--muted);font-size:14.5px;line-height:1.55;margin-top:12px}
+
+.final{background:rgba(212,105,79,.12);border-left:4px solid var(--terra);border-radius:11px;padding:20px 22px;margin-top:20px}
+.final h4{font-size:12px;letter-spacing:.06em;color:var(--terra);margin-bottom:10px;font-weight:700}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body><div id="app"></div>
+<script>
+const STEPS=[
+{
+ tag:"THE PROBLEM",
+ setup:"It is 1787. You are designing a government. You know one thing for certain: people will organise themselves into groups that pursue their own interest at everyone else's expense. Madison calls such a group a <em>faction</em>.",
+ q:"What do you do about factions?",
+ opts:["Outlaw them. No political groups allowed.",
+       "Educate people until everyone wants the same things.",
+       "Accept that they will exist and design around their effects.",
+       "Keep the country small enough that everyone already agrees."],
+ answer:2,
+ quote:"\u201CThere are two methods of curing the mischiefs of faction: the one, by removing its causes; the other, by controlling its effects. There are again two methods of removing the causes of faction: the one, by destroying the liberty which is essential to its existence; the other, by giving to every citizen the same opinions, the same passions, and the same interests.\u201D",
+ gloss:"Madison rejects both cures. Outlawing factions means destroying liberty \u2014 and he says that remedy \u201Cis worse than the disease.\u201D Making everyone think alike is impossible. So: control the effects."
+},
+{
+ tag:"THE SOURCE",
+ setup:"If you cannot remove the causes of faction, it helps to know where factions come from.",
+ q:"Where does Madison say factions originate?",
+ opts:["Poor education and ignorance",
+       "Foreign interference",
+       "Human nature \u2014 and above all, unequal property",
+       "Weak or corrupt leaders"],
+ answer:2,
+ quote:"\u201CThe latent causes of faction are thus sown in the nature of man. . . . But the most common and durable source of factions has been the various and unequal distribution of property.\u201D",
+ gloss:"This is why the causes cannot be removed. You would have to change human nature, or make everyone equally wealthy. Madison thinks neither is available \u2014 or desirable."
+},
+{
+ tag:"WHICH FACTION",
+ setup:"Some factions are a minority of the population. Some are a majority.",
+ q:"Which kind keeps Madison awake at night?",
+ opts:["A minority faction \u2014 small groups are harder to see coming",
+       "A majority faction \u2014 it can win by the rules and still oppress",
+       "Both equally",
+       "Neither, if the constitution is written well"],
+ answer:1,
+ quote:"\u201CIf a faction consists of less than a majority, relief is supplied by the republican principle, which enables the majority to defeat its sinister views by regular vote. . . . When a majority is included in a faction, the form of popular government . . . enables it to sacrifice to its ruling passion or interest both the public good and the rights of other citizens.\u201D",
+ gloss:"A minority faction loses the vote. A majority faction wins the vote \u2014 and uses the legitimate machinery of government to take from everyone else. Majority rule is the danger, not the safeguard."
+},
+{
+ tag:"THE DESIGN",
+ setup:"Madison distinguishes a <em>pure democracy</em>, where citizens assemble and govern in person, from a <em>republic</em>, where they elect representatives to govern for them.",
+ q:"Which does he choose, and why?",
+ opts:["Pure democracy \u2014 the people should speak for themselves",
+       "Republic \u2014 because representatives can be elected and removed",
+       "Republic \u2014 because it filters public opinion and can cover more territory",
+       "Either works, as long as there is a bill of rights"],
+ answer:2,
+ quote:"\u201CThe two great points of difference between a democracy and a republic are: first, the delegation of the government, in the latter, to a small number of citizens elected by the rest; secondly, the greater number of citizens, and greater sphere of country, over which the latter may be extended.\u201D",
+ gloss:"Two differences, and both matter. The next two questions take them one at a time."
+},
+{
+ tag:"THE FILTER \u00B7 THE HEART OF IT",
+ setup:"First difference: the people do not govern directly. They choose a body of representatives who govern for them.",
+ q:"Does electing representatives produce better decisions than the people would make themselves?",
+ opts:["Yes \u2014 representatives are wiser and more patriotic than ordinary people",
+       "No \u2014 they are the same people, so nothing improves",
+       "It should, but the same process can put the worst people in power instead",
+       "Only if voters are well educated"],
+ answer:2,
+ quote:"\u201CThe effect of the first difference is, on the one hand, to refine and enlarge the public views, by passing them through the medium of a chosen body of citizens, whose wisdom may best discern the true interest of their country, and whose patriotism and love of justice will be least likely to sacrifice it to temporary or partial considerations. . . . On the other hand, the effect may be inverted. Men of factious tempers, of local prejudices, or of sinister designs, may, by intrigue, by corruption, or by other means, first obtain the suffrages, and then betray the interests, of the people.\u201D",
+ gloss:"This is the passage to know. Madison wants representation to <em>refine and enlarge</em> the public view \u2014 to hand power to the people best able to see the country's real interest. But he says in the same breath that the machine runs both ways. The same election that can elevate the wisest can elevate a man of sinister design. He is not promising you the best of the best. He is telling you what he hopes for, and exactly how it fails."
+},
+{
+ tag:"THE SIZE",
+ setup:"Second difference: a republic can cover far more people and territory than a town meeting ever could.",
+ q:"Is a big republic safer than a small one?",
+ opts:["Smaller is safer \u2014 people share interests and know their leaders",
+       "Bigger is safer \u2014 more interests means a majority faction is harder to assemble",
+       "Size makes no difference to faction",
+       "Bigger is safer only if power is centralised"],
+ answer:1,
+ quote:"\u201CExtend the sphere, and you take in a greater variety of parties and interests; you make it less probable that a majority of the whole will have a common motive to invade the rights of other citizens. . . . [I]t will be more difficult for unworthy candidates to practise with success the vicious arts by which elections are too often carried.\u201D",
+ gloss:"This reversed the conventional wisdom of the age, which held that republics had to be small. Madison argues the opposite: multiply the interests and no single one can seize a majority. He adds that a larger pool also makes a fit choice more likely \u2014 but notice that the structural argument, not the virtue of representatives, is doing most of the work."
+},
+{
+ tag:"FIVE YEARS LATER",
+ setup:"Madison published Federalist 10 in November 1787, warning that factions are the disease of popular government. By 1792 he and Thomas Jefferson had organised opposition to Hamilton's financial program into what became the Democratic-Republican Party \u2014 the first opposition party in American history.",
+ q:"What do you make of that?",
+ opts:["He was a hypocrite. He warned against factions and then built one.",
+       "He changed his mind about whether parties are dangerous.",
+       "A party is not the same as a faction \u2014 parties compete openly under rules.",
+       "He thought Hamilton's side was the faction, and his was the remedy."],
+ answer:null,
+ quote:"\u201CIn every political society, parties are unavoidable. A difference of interests, real or supposed, is the most natural and fruitful source of them. . . . The great art of politicians lies in making them checks and balances to each other.\u201D \u2014 James Madison, \u201CParties,\u201D National Gazette, January 1792",
+ gloss:"There is no right answer here, and all four have been argued by serious historians. What is certain is that the man who called faction a disease spent the 1790s building one \u2014 and wrote, four years after Federalist 10, that parties were unavoidable and the task was to set them against each other."
+}
+];
+
+let i=0, picks=[];
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+function home(){
+  app.innerHTML=`<div class="card">
+    <h1>Madison's<br>Problem</h1>
+    <div class="rule"></div>
+    <p class="sub">Seven decisions. At each one you decide what you would do, then read what Madison actually wrote in <em>Federalist 10</em>.</p>
+    <p class="sub">You are not being graded on matching him. You are being asked to think the problem through before you are told the answer \u2014 which is the only way the answer means anything.</p>
+    <button class="btn" id="go">Begin</button>
+  </div>`;
+  app.querySelector("#go").onclick=()=>{i=0;picks=[];render();};
+}
+
+function render(){
+  if(i>=STEPS.length) return done();
+  const s=STEPS[i];
+  app.innerHTML=`
+   <div class="bar">
+     <span class="step">${i+1} / ${STEPS.length}</span>
+     <span class="track"><span class="fill" style="width:${(i/STEPS.length)*100}%"></span></span>
+     <button class="quit">Start over</button>
+   </div>
+   <div class="card">
+     <span class="tag">${s.tag}</span>
+     <p class="setup" style="margin-top:14px">${s.setup}</p>
+     <p class="q">${esc(s.q)}</p>
+     <div class="opts">
+       ${s.opts.map((o,n)=>`<button class="opt" data-n="${n}"><span class="key">${"ABCD"[n]}</span><span>${esc(o)}</span></button>`).join("")}
+     </div>
+     <div class="madison" id="m">
+       <h4>WHAT MADISON WROTE</h4>
+       <p class="quote">${s.quote}</p>
+       <p class="gloss">${s.gloss}</p>
+     </div>
+     <button class="btn" id="next" style="display:none">${i===STEPS.length-1?"Finish":"Next"}</button>
+   </div>`;
+  app.querySelector(".quit").onclick=home;
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    picks[i]=+b.dataset.n;
+    app.querySelectorAll(".opt").forEach(x=>{x.disabled=true;});
+    b.classList.add("pick");
+    app.querySelector("#m").classList.add("on");
+    const nx=app.querySelector("#next");
+    nx.style.display="inline-block";
+    nx.onclick=()=>{i++;render();};
+    nx.focus();
+  });
+}
+
+function done(){
+  const agreed=STEPS.reduce((a,s,n)=>a+(s.answer!==null&&picks[n]===s.answer?1:0),0);
+  const scored=STEPS.filter(s=>s.answer!==null).length;
+  app.innerHTML=`<div class="card">
+    <span class="tag">DONE</span>
+    <h1 style="font-size:clamp(24px,4.5vw,34px);margin-top:14px">You matched Madison on ${agreed} of ${scored}.</h1>
+    <p class="sub">That number does not matter much. The last question has no answer at all.</p>
+    <div class="final">
+      <h4>TAKE THIS WITH YOU</h4>
+      <p class="quote" style="font-style:normal;font-weight:600">Madison hoped representation would \u201Crefine and enlarge the public views.\u201D He also wrote, in the same paragraph, that \u201Cthe effect may be inverted.\u201D</p>
+      <p class="gloss">Every argument you make today about representative government has to deal with both halves of that sentence.</p>
+    </div>
+    <button class="btn" id="again">Run it again</button>
+  </div>`;
+  app.querySelector("#again").onclick=home;
+}
+
+document.addEventListener("keydown",e=>{
+  const nx=app.querySelector("#next");
+  if(e.key==="Enter"&&nx&&nx.style.display!=="none"){e.preventDefault();nx.click();return;}
+  const opts=app.querySelectorAll(".opt:not([disabled])");
+  if(!opts.length) return;
+  const k=e.key.toLowerCase();
+  let n="abcd".indexOf(k); if(n<0) n="1234".indexOf(k);
+  if(n>=0&&n<opts.length){e.preventDefault();opts[n].click();}
+});
+
+home();
+</script>
+</body>
+</html>
